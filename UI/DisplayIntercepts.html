@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>HTTP/HTTPS Interceptor</title>
+	<style>
+		.response { display: block; }
+		.hidden { display: none; }
+		.request-container { margin-bottom: 1em; border: 1px solid #ccc; padding: 1em; border-radius: 5px; }
+		.toggle-button { cursor: pointer; color: blue; text-decoration: underline; }
+		.response-content { white-space: pre-wrap; }
+	</style>
+	<script>
+        let lastDataLength = 0;
+        
+        async function fetchData() {
+            try {
+                const response = await fetch('/data');
+                const data = await response.json();
+                const container = document.getElementById('output');
+        
+                for (let i = lastDataLength; i < data.length; i++) {
+                    const item = data[i];
+                    const requestDiv = document.createElement('div');
+                    requestDiv.className = 'request-container';
+        
+                    requestDiv.innerHTML = `
+                        <p><strong>Request #${i + 1}</strong></p>
+                        <p><strong>Method:</strong> ${item.method}</p>
+                        <p><strong>URL:</strong> ${item.url}</p>
+                        <p class="toggle-button" onclick="toggleResponse('resp${i}')">Toggle Response</p>
+                        <pre id="resp${i}" class="response response-content hidden">${item.headers || 'No headers'} \n ${item.response || 'No response'}</pre>
+                    `;
+        
+                    container.appendChild(requestDiv);
+                }
+        
+                lastDataLength = data.length;
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+            }
+        }
+        
+        function toggleResponse(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+        
+        setInterval(fetchData, 1000);
+        </script>
+</head>
+<body>
+	<h1>HTTP/HTTPS Interceptor</h1>
+	<div id="output">Loading...</div>
+</body>
+</html>
