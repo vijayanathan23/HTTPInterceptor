@@ -21,7 +21,7 @@ func main() {
 		proxy := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.Method == http.MethodConnect {
 				log.Println("Handling in Connect")
-				handlers.HandleConnect(w, r)
+				handlers.HandleConnect(w, r, &interceptedData, &mu)
 			} else {
 				log.Println("Handling in HTTP")
 				handlers.HandleHTTP(w, r, &interceptedData, &mu)
